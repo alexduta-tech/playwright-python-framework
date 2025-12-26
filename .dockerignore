@@ -1,0 +1,24 @@
+# Git and Docker files
+.git
+.gitignore
+.dockerignore
+
+# Python virtual environment
+.venv/
+__pypackages__/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test artifacts
+.pytest_cache/
+reports/
+logs/
+
+# IDE/Editor configuration
+.vscode/
+
+# Local scripts and documentation
+run_docker.bat
+README.md

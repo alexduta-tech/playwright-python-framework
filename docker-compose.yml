@@ -1,0 +1,40 @@
+#Specifies the Compose file format version.
+#3.8 is compatible with modern Docker Engine and supports most features.
+version: '3.8'
+
+# Simple docker-compose for running the playwright test framework.
+# - Builds image from the local Dockerfile
+# - Mounts report and log folders to the host for easy access
+
+# services defines all the containers that will run as part of this Docker Compose project, Here, we have one service: playwright_tests
+services:
+  # Docker Compose will create a container based on container_name
+  playwright_tests:
+    # build the image locally before running the container
+    build:
+      # The build context, i.e., the folder sent to Docker daemon (the project root).
+      context: .
+      # Specifies the Dockerfile to use.
+      dockerfile: Dockerfile
+    # Assign a custom name to the container instead of the default generated one
+    container_name: playwright_tests
+    networks:
+      - automation-network
+    # Names the resulting Docker image playwright_framework. If the image already exists, Compose can use it instead of rebuilding (unless you force rebuild with --build)
+    image: playwright_framework
+    # Persist reports and logs to the host. Maps directories from the host machine to the container. e.g. Host folder ./reports,	Container folder /app/reports
+    volumes:
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./tests:/app/tests
+      - ./utils:/app/utils
+      - ./pages:/app/pages
+    # Default runtime environment; Sets environment variables inside the container.
+    environment:
+      - BASE_URL=http://frontend:80/ # in Docker the host 'frontend' resolves to the frontend container and not localhost
+    # Keep container alive so you can exec into it later (useful for manual runs/debug)
+    command: tail -f /dev/null
+    
+networks:
+  automation-network: # create a shared Docker network for communication between containers (manually run once): docker network create automation-network
+    external: true
