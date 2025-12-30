@@ -1,4 +1,4 @@
-# Python Playwright Framework forDocker
+# Python Playwright Framework for Testing Web Applications in Docker
 
 This project provides a Playwright framework for testing web applications in Docker container using Python. It includes sample test cases and demonstrates the use of the Page Object Model (POM) design pattern.
 
@@ -50,6 +50,10 @@ This project provides a Playwright framework for testing web applications in Doc
 - Note: Initial Docker execution may take additional time to build the image and download dependencies. This is a one-time cost; later runs benefit from Docker’s caching mechanism.
 
 ## Running the Tests
+
+### Prerequisites
+Start Automation Playground application (locally or in Docker container) 
+Please see the instructions here: https://github.com/alexduta-tech/automation-lab
 
 ### Docker execution
 - You can run the tests by executing commands inside the running container.
