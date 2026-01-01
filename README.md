@@ -100,6 +100,15 @@ The generated logs will be available in the `logs` directory on your local machi
     ```bash
     pytest -m smoke --browser chromium --headed -v --html=reports/report.html --self-contained-html
     ```
+### Browser's
+-   To run tests on different browsers, update the running commands to use any of  the following:
+    ```bash
+    --browser chromium
+    --browser firefox
+    --browser webkit    
+    --browser-channel chrome
+    --browser-channel msedge
+    ```
 
 ## Project Structure
 

@@ -8,6 +8,5 @@ DEFAULT_REPORT_DIR = os.path.join(ROOT_DIR, "reports")
 
 # Application settings
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000/")
-IMPLICIT_WAIT = 10
 
 # Browser configuration defaults -> not needed to set them here as this is handled by pytest-playwright command line args
