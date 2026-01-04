@@ -3,3 +3,4 @@ testpaths = ["tests"]
 markers = [
   "smoke"
 ]
+addopts = "--html=reports/report.html --self-contained-html --show-capture=log"

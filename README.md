@@ -69,12 +69,7 @@ Please see the instructions here: https://github.com/alexduta-tech/automation-la
     docker compose exec playwright_tests pytest -m smoke --browser chromium -v 
     ```
 
--   **Generate an HTML report:**
-    ```bash
-    docker compose exec playwright_tests pytest -m smoke --browser chromium -v --html=reports/report.html --self-contained-html
-    ```
-
-The generated report will be available in the `reports` directory on your local machine.
+The generated reports (html, screenshots) will be available in the `reports` directory on your local machine.
 The generated logs will be available in the `logs` directory on your local machine.
 
 ### Local execution
@@ -98,7 +93,7 @@ The generated logs will be available in the `logs` directory on your local machi
     ```
 -   **Run specific tests using markers:**
     ```bash
-    pytest -m smoke --browser chromium --headed -v --html=reports/report.html --self-contained-html
+    pytest -m smoke --browser chromium --headed -v
     ```
 ### Browser's
 -   To run tests on different browsers, update the running commands to use any of  the following:
@@ -121,11 +116,14 @@ The generated logs will be available in the `logs` directory on your local machi
 ├── reports                 # Test reports
 ├── logs                    # Test logs
 ├── requirements.txt        # Python dependencies
-├── pyproject.toml          # Python project metadata
+├── pyproject.toml          # Python project metadata (define markers, html report generation etc.)
 ├── run_playwright_docker.bat # Batch script to build and run the container
+├── data                    # Test data
 ├── tests                   # Test suites
 └── utils                   # Utility modules
     ├── config.py
+    ├── constants.py
+    ├── data_generator.py    
     ├── docker.py
     ├── logger.py
     └── playwright_utils.py
