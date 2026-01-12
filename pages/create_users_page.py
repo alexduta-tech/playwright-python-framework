@@ -1,3 +1,4 @@
+import os
 from playwright.sync_api import Page
 from utils.config import IMPLICIT_WAIT
 from utils.playwright_utils import PlaywrightUtils
@@ -25,8 +26,7 @@ class CreateUsersPage():
     INPUT_PROFILE_PHOTO = "//input[@type='file']"
     SELECT_ROLE = "#role"
     SELECT_STATUS = "#status"
-    LOADING_SPINNER = "#spinner"  
-    
+    LOADING_SPINNER = ".spinner"  
         
     # Page Object Methods
     def wait_for_page_load(self, timeout=IMPLICIT_WAIT):
@@ -59,8 +59,7 @@ class CreateUsersPage():
         """
         self.logger.info("Clicking Create User button")
         self.page.click(self.BUTTON_CREATE_USER)
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         
         return self
     
@@ -70,8 +69,7 @@ class CreateUsersPage():
         """
         self.logger.info("Clicking Create 10 Users button")
         self.page.click(self.BUTTON_CREATE_10_USERS)
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         
         return self    
     
@@ -109,6 +107,9 @@ class CreateUsersPage():
         
         if profile_photo_path:
             self.logger.info(f"Uploading profile photo from: {profile_photo_path}")
+            abs_path = os.path.abspath(profile_photo_path)
+            if not os.path.exists(abs_path):
+                self.logger.error(f"Profile photo not found: {abs_path}")            
             self.page.set_input_files(self.INPUT_PROFILE_PHOTO, profile_photo_path)
             
         return self

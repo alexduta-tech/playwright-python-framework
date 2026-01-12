@@ -29,6 +29,7 @@ services:
       - ./tests:/app/tests
       - ./utils:/app/utils
       - ./pages:/app/pages
+      - ./data:/app/data
     # Default runtime environment; Sets environment variables inside the container.
     environment:
       - BASE_URL=http://frontend:80/ # in Docker the host 'frontend' resolves to the frontend container and not localhost

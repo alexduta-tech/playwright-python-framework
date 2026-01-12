@@ -70,7 +70,7 @@ Please see the instructions here: https://github.com/alexduta-tech/automation-la
     ```
 
 Notes:
-- In Docker the `headless` mode option is the strongly recommended to be used to run the automated tests (this is the framework deafault option, and no changes are required to apply before running the tests).
+- In Docker the `headless` mode option is the strongly recommended to be used to run the automated tests (this is the default option set in the config file).
 - The generated reports (html, screenshots) will be available in the `reports` directory on the execution machine.
 - The generated logs will be available in the `logs` directory on the execution machine.
 

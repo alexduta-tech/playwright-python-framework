@@ -25,7 +25,7 @@ class ListAllUsersPage():
     TABLE_NO_USERS_FOUND_MESSAGE = "#noUsersCell"
     TABLE_NEXT_PAGE_BUTTON = "#nextPage"
     TABLE_PREVIOUS_PAGE_BUTTON = "#prevPage"
-    LOADING_SPINNER = "#spinner"
+    LOADING_SPINNER = ".spinner"
     
     # Page Object Methods
     def wait_for_page_load(self, timeout=IMPLICIT_WAIT) -> None:
@@ -37,7 +37,9 @@ class ListAllUsersPage():
         """
         self.logger.info("Waiting for List All Users page to load")
         self.page.wait_for_url(f"**{self.page_path}", timeout=timeout)     
-
+        #user table loads on page load, wait for the loading spinner to disappear (if present)
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        
     def go_back_to_dashboard(self) -> None:
         """
         Click the Back to Dashboard button.
@@ -73,20 +75,22 @@ class ListAllUsersPage():
         if kwargs.get('name'):
             self.logger.info(f"Filtering users by name: {kwargs['name']}")
             self.page.fill(self.INPUT_SEARCH, kwargs['name'])
+            self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         elif kwargs.get('email'):
             self.logger.info(f"Filtering users by email: {kwargs['email']}")
             self.page.fill(self.INPUT_SEARCH, kwargs['email'])
+            self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         if kwargs.get('role'):
             self.logger.info(f"Filtering users by role: {kwargs['role']}")
             self.page.select_option(self.SELECT_ROLE, kwargs['role'])
+            self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         if kwargs.get('status'):
             self.logger.info(f"Filtering users by status: {kwargs['status']}")
             self.page.select_option(self.SELECT_STATUS, kwargs['status'])
+            self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")
-        # wait for the users table to be updated
         self.page.locator(self.TABLE_USERS).wait_for(state="attached", timeout=IMPLICIT_WAIT)        
+        
         return self
 
     def is_user_in_list(self, **kwargs) -> bool:
@@ -131,8 +135,7 @@ class ListAllUsersPage():
         """
         self.logger.info("Clicking next page button")
         self.page.click(self.TABLE_NEXT_PAGE_BUTTON)                             
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
                 
         return self                
     
@@ -142,8 +145,7 @@ class ListAllUsersPage():
         """
         self.logger.info("Clicking previous page button")
         self.page.click(self.TABLE_PREVIOUS_PAGE_BUTTON)
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
         
         return self
     
@@ -155,7 +157,7 @@ class ListAllUsersPage():
             list: List of strings representing user row texts.
         """
         self.logger.info("Getting all user rows from the users table")
-        result = [row.text for row in self.page.locator(self.TABLE_USERS_ROWS).all()]
+        result = [row.text_content() for row in self.page.locator(self.TABLE_USERS_ROWS).all()]
         self.logger.debug(f"User rows: {result}")
         
         return result    
@@ -167,7 +169,8 @@ class ListAllUsersPage():
         self.logger.info("Clicking reset filters button")
         self.page.click(self.BUTTON_RESET_FILTERS)
         
-        # wait for possible loading spinner to disappear
-        self.page.wait_for_selector(self.LOADING_SPINNER, state="detached")        
+        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)       
+        # wait for the users table to be updated
+        self.page.locator(self.TABLE_USERS).wait_for(state="attached", timeout=IMPLICIT_WAIT)
         
         return self

@@ -1,3 +1,4 @@
+import os
 import random
 from time import time
 import uuid
@@ -14,4 +15,5 @@ non_existing_name = str(uuid.uuid4())
 random_email = f"user_{int(time())}@example.com"
 random_status = random.choice(statuses)
 random_role = random.choice(roles)
-profile_photo = ROOT_DIR + "/data/photo/test_profile_photo.png"
+# Build path using os.path.join to ensure OS-specific separators
+profile_photo = os.path.join(ROOT_DIR, "data", "photo", "test_profile_photo.png")

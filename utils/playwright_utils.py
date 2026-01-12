@@ -1,5 +1,7 @@
 from playwright.sync_api import Page
 
+from utils.config import IMPLICIT_WAIT
+
 class PlaywrightUtils:
     """Utility class for Playwright-related helper methods.
     """
@@ -17,14 +19,14 @@ class PlaywrightUtils:
         Returns:
             bool: True if element is present, False otherwise.
         """
-        self.logger.info(f"Checking if element is present: {selector}")
+        self.logger.debug(f"Checking if element is present: {selector}")
         try:
             self.page.locator(selector).wait_for(state="attached", timeout=timeout)
             self.scroll_to_element(selector)
-            self.logger.info(f"Element is present")
+            self.logger.debug(f"Element is present")
             return True
         except Exception:
-            self.logger.info("Element is not present")
+            self.logger.debug("Element is not present")
             return False
     
     def scroll_to_element(self, selector: str) -> None:
@@ -36,3 +38,10 @@ class PlaywrightUtils:
         self.logger.debug(f"Scrolling to element: {selector}")
         self.page.locator(selector).scroll_into_view_if_needed()
         self.logger.debug(f"Scrolled to element")
+        
+    def wait_for_element_to_disappear(self, selector: str, timeout: int = IMPLICIT_WAIT) -> None:    
+        """
+        Wait for the element to disappear (if present).
+        """
+        self.logger.debug(f"Waiting for element to disappear: {selector}")
+        self.page.locator(selector).wait_for(state="hidden", timeout=timeout)
