@@ -78,14 +78,19 @@ def test_confirm_dialog_cancel(page, logger, screenshot, expected_confirm_dialog
     
     assert expected_confirm_dialog_result_message in confirm_result_message, f"Expected confirm dialog result message to contain '{expected_confirm_dialog_result_message}', but got '{confirm_result_message}'"
     
-@pytest.mark.parametrize("name,email,role,status,expected_prompt_result_message", [
-    (random_name, random_email, random_role, random_status, "User found in the system.")
+@pytest.mark.parametrize("expected_prompt_result_message", [
+    ("User found in the system.")
 ],ids=["Prompt dialog was shown, text entered and accepted"])
 @pytest.mark.smoke
-def test_prompt_dialog_enter_text_and_accept(page, logger, screenshot, name, email, role, status, expected_prompt_result_message):
+def test_prompt_dialog_enter_text_and_accept(page, logger, screenshot, expected_prompt_result_message):
     """
     Test Prompt Dialog: enter text and accept
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+        
     logger.info(f"Opening URL: {BASE_URL}")
     page.goto(BASE_URL)
     

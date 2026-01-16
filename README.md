@@ -63,16 +63,17 @@ Please see the instructions here: https://github.com/alexduta-tech/automation-la
     ```bash
     docker compose exec playwright_tests pytest tests/
     ```
-
 -   **Run specific tests using markers:**
     ```bash
     docker compose exec playwright_tests pytest -m smoke --browser chromium -v 
     ```
+-   **Run tests a given number of times (e.g. 2 times):**    
+    ```bash
+    docker compose exec selenium_tests pytest -m smoke --count=2
+    ```        
 
 Notes:
 - In Docker the `headless` mode option is the strongly recommended to be used to run the automated tests (this is the default option set in the config file).
-- The generated reports (html, screenshots) will be available in the `reports` directory on the execution machine.
-- The generated logs will be available in the `logs` directory on the execution machine.
 
 ### Local execution
 -   **Create virtual environment (if not already created):**
@@ -101,6 +102,11 @@ Notes:
     ```bash
     pytest -m smoke --browser chromium --headed -v
     ```
+-   **Run tests a given number of times (e.g. 2 times):**    
+    ```bash
+    pytest -m smoke --count=2
+    ```
+
 ### Browser's
 -   To run tests on different browsers, update the running commands to use any of  the following:
     ```bash
@@ -110,6 +116,11 @@ Notes:
     --browser-channel chrome
     --browser-channel msedge
     ```
+
+### Reports and logs
+- The generated reports (html, screenshots) will be available in the `reports` directory on the execution machine.
+- Also a `.json report file` will be generated in the `reports` directory, this file contains all the execution details like overall and individual test status, execution time etc.
+- The generated logs will be available in the `logs` directory on the execution machine.
 
 ## Project Structure
 

@@ -21,12 +21,8 @@ def test_create_10_users(page: Page, logger, screenshot):
     
     assert create_users_page.are_10_users_created(), "10 users were not created successfully"
 
-
-@pytest.mark.parametrize("name,email,role,status,profile_photo", [
-    (random_name, random_email, random_role, random_status, profile_photo)
-],ids=["Create user with random data"])
 @pytest.mark.smoke
-def test_create_user_success(page: Page, logger, screenshot, name, email, role, status, profile_photo):
+def test_create_user_success(page: Page, logger, screenshot):
     """
     Test positive flow for creating a user
     """
@@ -36,10 +32,10 @@ def test_create_user_success(page: Page, logger, screenshot, name, email, role, 
     dashboard_page = DashboardPage(page, logger)
     create_users_page = dashboard_page.open_create_users_page()
     create_users_page.fill_user_form(
-        name=name,
-        email=email,
-        role=role,
-        status=status,
+        name=random_name(),
+        email=random_email(),
+        role=random_role(),
+        status=random_status(),
         profile_photo_path=profile_photo
     )
     

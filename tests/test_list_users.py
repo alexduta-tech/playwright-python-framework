@@ -8,15 +8,16 @@ from pages.dashboard_page import DashboardPage
 from utils.config import BASE_URL
 from utils.data_generator import random_name, random_email, random_role, random_status, profile_photo, non_existing_name
 
-
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status)
-],ids=["Filter by name"])
 @pytest.mark.smoke
-def test_filter_users_by_name(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_name(page, logger, screenshot):
     """
     Test filtering users by name
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+        
     _create_users(page, logger, name=name, email=email, role=role, status=status)
     
     dashboard_page = DashboardPage(page, logger)
@@ -28,14 +29,16 @@ def test_filter_users_by_name(page, logger, screenshot, name, email, role, statu
     
     assert result, f"User with name {name} not found in the filtered list"
     
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status)
-],ids=["Filter by email"])
 @pytest.mark.smoke
-def test_filter_users_by_email(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_email(page, logger, screenshot):
     """
     Test filtering users by email
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+        
     _create_users(page, logger, name, email, role, status)    
     
     dashboard_page = DashboardPage(page, logger)
@@ -45,14 +48,16 @@ def test_filter_users_by_email(page, logger, screenshot, name, email, role, stat
     
     assert result, f"User with email {email} not found in the filtered list"    
  
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status)
-],ids=["Filter by role"])
 @pytest.mark.smoke
-def test_filter_users_by_role(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_role(page, logger, screenshot):
     """
     Test filtering users by role
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+    
     _create_users(page, logger, name, email, role, status)
     
     dashboard_page = DashboardPage(page, logger)
@@ -62,14 +67,16 @@ def test_filter_users_by_role(page, logger, screenshot, name, email, role, statu
     
     assert result, f"User with role {role} not found in the filtered list"
     
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status)
-],ids=["Filter by status"])
 @pytest.mark.smoke
-def test_filter_users_by_status(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_status(page, logger, screenshot):
     """
     Test filtering users by status
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+    
     _create_users(page, logger, name, email, role, status)
     dashboard_page = DashboardPage(page, logger)
     list_all_users_page = dashboard_page.open_list_all_users_page()
@@ -78,14 +85,16 @@ def test_filter_users_by_status(page, logger, screenshot, name, email, role, sta
     
     assert result, f"User with status {status} not found in the filtered list"
     
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status)
-],ids=["Filter by name, role and status"])    
 @pytest.mark.smoke
-def test_filter_users_by_name_role_and_status(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_name_role_and_status(page, logger, screenshot):
     """
     Test filtering users by name, role and status
     """
+    name=random_name()
+    email=random_email()
+    role=random_role()
+    status=random_status()
+    
     _create_users(page, logger, name, email, role, status)
     dashboard_page = DashboardPage(page, logger)
     list_all_users_page = dashboard_page.open_list_all_users_page()
@@ -94,14 +103,13 @@ def test_filter_users_by_name_role_and_status(page, logger, screenshot, name, em
     
     assert result, f"User with name {name}, role {role}, and status {status} not found in the filtered list"
 
-@pytest.mark.parametrize("name,email,role,status", [
-    (non_existing_name, random_email, random_role, random_status) 
-],ids=["Filter by non-existing name"])
 @pytest.mark.smoke
-def test_filter_users_by_non_existing_name(page, logger, screenshot, name, email, role, status):
+def test_filter_users_by_non_existing_name(page, logger, screenshot):
     """
     Test filtering users by a non-existing name
     """
+    name = non_existing_name()
+    
     logger.info(f"Opening URL: {BASE_URL}")
     page.goto(BASE_URL)
     
@@ -135,14 +143,16 @@ def test_pagination(page, logger, screenshot):
     
     assert first_page_users != second_page_users, "Pagination did not change the displayed users"
 
-@pytest.mark.parametrize("name,email,role,status", [
-    (random_name, random_email, random_role, random_status) 
-],ids=["Reset filters after applying name, role and status filters"])    
 @pytest.mark.smoke
-def test_reset_filters(page, logger, screenshot, name, email, role, status):
+def test_reset_filters(page, logger, screenshot):
     """
     Test resetting filters
     """
+    name = random_name()
+    email = random_email()
+    role = random_role()
+    status = random_status()
+        
     _create_users(page, logger, name, email, role, status)
     dashboard_page = DashboardPage(page, logger)
     list_all_users_page = dashboard_page.open_list_all_users_page()
