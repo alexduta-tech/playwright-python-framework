@@ -3,6 +3,7 @@ Conftest file to define pytest fixtures for Playwright tests.
 Fixtures to run before and after each test, including logger, screenshot etc.
 """
 import os
+import platform
 import pytest
 from utils.config import DEFAULT_REPORT_DIR
 from utils.docker import running_in_docker
@@ -31,7 +32,7 @@ def screenshot(request, page, logger):
     Requires pytest-playwright's 'page' fixture.
     """
     logger.debug(f"Playwright test")
-    logger.debug(f"Operating System: {os.name}, Platform: {os.sys.platform}")
+    logger.debug(f"Operating System: {platform.platform()}")
     running_in_docker(logger)
     
     yield  # let the test run
