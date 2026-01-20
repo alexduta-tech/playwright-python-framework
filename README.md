@@ -57,19 +57,21 @@ Please see the instructions here: https://github.com/alexduta-tech/automation-la
 
 ### Docker execution
 - You can run the tests by executing commands inside the running container.
-- From playwright-python-framework foler execute the following commands:
+- From playwright-python-framework folder execute the following commands:
 
 -   **Run all tests:**
     ```bash
     docker compose exec playwright_tests pytest tests/
     ```
--   **Run specific tests using markers:**
+
+-   **Run specific tests using markers(specify browser at command line):**
     ```bash
     docker compose exec playwright_tests pytest -m smoke --browser chromium -v 
     ```
+
 -   **Run tests a given number of times (e.g. 2 times):**    
     ```bash
-    docker compose exec selenium_tests pytest -m smoke --count=2
+    docker compose exec playwright_tests pytest -m smoke --browser chromium -v --count=2
     ```        
 
 Notes:
@@ -92,29 +94,34 @@ Notes:
     ```
 -   **Install browsers(if not already installed):**
     ```
-    playwright install
+    playwright install or playwright install chromium chrome firefox msedge
     ```
 -   **Run all tests:**
     ```bash
     pytest tests/
     ```
--   **Run specific tests using markers:**
+-   **Run specific tests using markers (specify browser and headed at command line):**
     ```bash
     pytest -m smoke --browser chromium --headed -v
     ```
 -   **Run tests a given number of times (e.g. 2 times):**    
     ```bash
-    pytest -m smoke --count=2
+    pytest -m smoke --count=2 --browser chromium --headed -v
     ```
 
 ### Browser's
--   To run tests on different browsers, update the running commands to use any of  the following:
+-   To run tests on different browsers, update the above running commands to use any of  the following:
     ```bash
     --browser chromium
     --browser firefox
     --browser webkit    
     --browser-channel chrome
     --browser-channel msedge
+    ```
+    - e.g. pytest -m smoke --browser chromium, pytest -m smoke --browser-channel chrome
+-   To run tests in headed mode (only locall runs/not on Docker) please use the following param:
+    ```
+    --headed
     ```
 
 ### Reports and logs

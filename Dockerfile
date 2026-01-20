@@ -40,8 +40,8 @@ RUN apt-get update && \
         libxshmfence1 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright default's browsers: (Chromium, Firefox, Webkit) and optional browsers: (Chrome, Edge)
-RUN playwright install chrome msedge --with-deps
+# Install Playwright browsers: Chromium, Chrome, Firefox, Edge
+RUN playwright install chromium chrome firefox msedge --with-deps
 
 # Final stage - reuse the builder image (keeps layers and installed packages)
 FROM builder
