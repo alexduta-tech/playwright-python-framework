@@ -50,11 +50,17 @@ def screenshot(request, page, logger):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
+    """
+    Start resource monitoring at the beginning of the test session.
+    """
     session.resource_monitor = resource_monitor.ResourceMonitor(interval=0.1)
     session.resource_monitor.start()
 
 @pytest.hookimpl(trylast=True)
 def pytest_sessionfinish(session, exitstatus):
+    """
+    Stop resource monitoring at the end of the test session.
+    """
     session.resource_monitor.stop()
     results = session.resource_monitor.summary()
 
