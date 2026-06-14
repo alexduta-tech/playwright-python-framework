@@ -1,6 +1,6 @@
 # Build stage for installing dependencies and browsers
-# Use a small Python 3.12 base image as the build stage
-FROM python:3.12-slim as builder
+# Use a small Python 3.13 base image as the build stage
+FROM python:3.13-slim as builder
 
 # Set work directory inside the image
 WORKDIR /app
