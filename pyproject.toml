@@ -3,4 +3,4 @@ testpaths = ["tests"]
 markers = [
   "smoke"
 ]
-addopts = "--json-report --json-report-file=reports/report.json --html=reports/report.html --self-contained-html --show-capture=log"
+addopts = "--repeat-scope=session --json-report --json-report-file=reports/report.json --html=reports/report.html --self-contained-html --show-capture=log"

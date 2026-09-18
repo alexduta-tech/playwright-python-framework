@@ -36,13 +36,15 @@ class DashboardPage():
     def open_list_all_users_page(self) -> ListAllUsersPage:
         """
         Open the List All Users page.
-        
+        # ListAllUsersPage waits for the table itself; a spinner wait here would
+        # consume the short loading cycle and make that wait miss it.
         Returns:
             ListAllUsersPage: Page object for the List All Users page.
         """
         self.logger.info("Clicking list all users link")
         self.page.click(self.LIST_ALL_USERS_LINK)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        # No spinner wait here: ListAllUsersPage waits for the loaded table itself, and
+        # a wait at this point would consume the short loading cycle before it.
         
         return ListAllUsersPage(self.page, self.logger)
     

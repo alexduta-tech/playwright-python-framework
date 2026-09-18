@@ -1,6 +1,7 @@
 from typing import Optional
 from playwright.sync_api import Page
 from pages.common_widgets.generic_dialog import GenericDialog
+from utils.config import PAGE_LOAD_TIMEOUT_S
 from utils.playwright_utils import PlaywrightUtils
 
 class UserDialogsPage():
@@ -26,7 +27,7 @@ class UserDialogsPage():
     LOADING_SPINNER = ".spinner"
     
     # Page Object Methods
-    def wait_for_page_load(self, timeout=5) -> None:
+    def wait_for_page_load(self, timeout=PAGE_LOAD_TIMEOUT_S) -> None:
         """
         Wait for the Users Dialogs page to load by checking the presence of the uri.
 
@@ -34,7 +35,7 @@ class UserDialogsPage():
             timeout: Maximum time to wait in seconds
         """
         self.logger.info("Waiting for Users Dialogs page to load")
-        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout)     
+        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout * 1000)     
         
     def go_back_to_dashboard(self) -> None:
         """
@@ -61,7 +62,7 @@ class UserDialogsPage():
         # 2. Trigger the dialog
         self.logger.info("Clicking Show Alert button")
         self.page.click(self.BUTTON_SHOW_ALERT)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
     
@@ -84,14 +85,14 @@ class UserDialogsPage():
         
         # error message is present and it was expected
         if is_error_expected:
-            error_message = self.page.text_content(self.MESSAGE_ERROR)
+            error_message = self.page.inner_text(self.MESSAGE_ERROR)
             self.logger.info(f"Error message is present on the page, text: {error_message}")
             return error_message
         
         # error message is present but was not expected
         if self.playwright_utils.is_element_present(self.MESSAGE_ERROR):
             self.logger.error("Error message present on the page, no success message available")
-            return self.page.text_content(self.MESSAGE_ERROR)
+            return self.page.inner_text(self.MESSAGE_ERROR)
 
         # success message is not present but it was expected
         if not self.playwright_utils.is_element_present(self.MESSAGE_SUCCESS):
@@ -99,7 +100,7 @@ class UserDialogsPage():
             return "Success message not present on the page"
         
         # success message is present
-        success_message = self.page.text_content(self.MESSAGE_SUCCESS)
+        success_message = self.page.inner_text(self.MESSAGE_SUCCESS)
         self.logger.info(f"Success message is present on the page, text: {success_message}")
         
         return success_message          
@@ -113,7 +114,7 @@ class UserDialogsPage():
         # 2. Trigger the dialog          
         self.logger.info("Clicking show confirm button")
         self.page.click(self.BUTTON_SHOW_CONFIRM)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
     
@@ -134,7 +135,7 @@ class UserDialogsPage():
         # 2. Trigger the dialog          
         self.logger.info("Clicking show confirm button")
         self.page.click(self.BUTTON_SHOW_CONFIRM)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
         
@@ -155,7 +156,7 @@ class UserDialogsPage():
         # 2. Trigger the dialog
         self.logger.info("Clicking show prompt button")
         self.page.click(self.BUTTON_SHOW_PROMPT)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
 
@@ -179,7 +180,7 @@ class UserDialogsPage():
         # 2. Trigger the dialog
         self.logger.info("Clicking show prompt button")
         self.page.click(self.BUTTON_SHOW_PROMPT)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
     

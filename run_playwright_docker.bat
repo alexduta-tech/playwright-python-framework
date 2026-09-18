@@ -13,7 +13,7 @@ REM Short usage hints: how to run tests and stop the service
 echo Container is now running in the background!
 echo.
 echo To run tests in the running container, use:
-echo    docker compose exec playwright_tests pytest -m smoke
+echo    docker compose exec playwright_tests pytest -m smoke --browser-channel chrome
 echo.
 echo To stop and remove containers, networks, and default volumes:
 echo    docker compose down

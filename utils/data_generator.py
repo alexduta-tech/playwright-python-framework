@@ -10,7 +10,11 @@ statuses = ["Active", "Disabled"]
 roles = ["Admin", "Editor", "Viewer"]
 
 def random_name():
-    return f"{random.choice(first_names)} {random.choice(last_names)}"
+    # The first/last name pools only combine into 64 distinct names, while one suite
+    # repetition creates more than a hundred users. Without a unique suffix, filtering by
+    # a name matches other users with the same name and the assertions stop describing
+    # the user under test.
+    return f"{random.choice(first_names)} {random.choice(last_names)} {uuid.uuid4().hex[:6]}"
 def non_existing_name():
     return str(uuid.uuid4())
 def random_email():

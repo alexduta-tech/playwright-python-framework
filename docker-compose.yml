@@ -16,6 +16,11 @@ services:
       context: .
       # Specifies the Dockerfile to use.
       dockerfile: Dockerfile
+      # Browser versions to install. Export CHROME_VERSION / EDGE_VERSION before building
+      # to pin them, and use the same values for the Selenium and Playwright images.
+      args:
+        CHROME_VERSION: ${CHROME_VERSION:-}
+        EDGE_VERSION: ${EDGE_VERSION:-}
     # Assign a custom name to the container instead of the default generated one
     container_name: playwright_tests
     networks:
@@ -31,8 +36,12 @@ services:
       - ./pages:/app/pages
       - ./data:/app/data
       - ./monitoring:/app/monitoring
+      # User store of the application under test, emptied before every repetition.
+      # AUT_STORAGE_DIR overrides the default automation-lab checkout location.
+      - ${AUT_STORAGE_DIR:-../automation-lab/backend/app/storage}:/aut-storage
     # Default runtime environment; Sets environment variables inside the container.
     environment:
+      - AUT_USERS_FILE=/aut-storage/users.json # emptied before every repetition
       - BASE_URL=http://frontend:80/ # in Docker the host 'frontend' resolves to the frontend container and not localhost
     # Keep container alive so you can exec into it later (useful for manual runs/debug)
     command: tail -f /dev/null

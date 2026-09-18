@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
+        gnupg \
         wget \
         fonts-liberation \
         libnss3 \
@@ -40,8 +41,34 @@ RUN apt-get update && \
         libxshmfence1 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright browsers: Chromium, Chrome, Firefox, Edge
-RUN playwright install chromium chrome firefox msedge --with-deps
+# Install Playwright's own browsers: its bundled Chromium and its patched Firefox.
+# Chrome and Edge are not taken from Playwright; they are the system packages installed
+# below and are used through --browser-channel chrome / msedge.
+RUN playwright install chromium firefox --with-deps
+
+# Google Chrome and Microsoft Edge, installed identically in the Selenium and Playwright
+# images so that both frameworks drive the same browser binaries. Build both images with
+# the same CHROME_VERSION / EDGE_VERSION (e.g. 153.0.8010.36) to pin them; left empty, the
+# latest stable release is installed. Google's repository only carries the current Chrome
+# release, so a pinned Chrome version stops resolving once a newer one is published.
+# This stays the last apt step: both packages rewrite their apt sources when installed.
+ARG CHROME_VERSION=
+ARG EDGE_VERSION=
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+        | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" \
+        > /etc/apt/sources.list.d/google-chrome.list && \
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+        | gpg --dearmor -o /usr/share/keyrings/microsoft-edge.gpg && \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-edge.gpg] https://packages.microsoft.com/repos/edge stable main" \
+        > /etc/apt/sources.list.d/microsoft-edge.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        "google-chrome-stable${CHROME_VERSION:+=${CHROME_VERSION}-1}" \
+        "microsoft-edge-stable${EDGE_VERSION:+=${EDGE_VERSION}-1}" && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    { google-chrome --version; microsoft-edge --version; } | tee /opt/browser-versions.txt
 
 # Final stage - reuse the builder image (keeps layers and installed packages)
 FROM builder

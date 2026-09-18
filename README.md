@@ -1,158 +1,161 @@
-# Python Playwright Framework for Testing Web Applications in Docker
+# Playwright Python Framework
 
-This project provides a Playwright framework for testing web applications in Docker container using Python. It includes sample test cases and demonstrates the use of the Page Object Model (POM) design pattern.
+UI tests for the [Automation Playground](https://github.com/alexduta-tech/automation-lab) web app, written with Playwright, pytest and the Page Object Model. A Selenium version with the same tests is in [selenium-python-framework](https://github.com/alexduta-tech/selenium-python-framework).
 
-## Tech stack
+## 1. Install
 
-- **Python:** The core programming language for writing tests.
-- **Playwright:** Fast and reliable end-to-end testing for modern web apps.
-- **Docker:** Used to create a consistent and isolated environment for running tests.
-- **Pytest:** A mature testing framework for Python.
-- **Pytest-HTML:** A pytest plugin for generating HTML reports.
+You need Python 3.13 and Chrome or Edge. Playwright uses the installed Chrome and Edge, and installs its own Firefox.
 
-## Features
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+playwright install chromium firefox
+```
 
-- **Programming language:** Python, chosen for readability and strong Playwright ecosystem
-- **Web automation framework:** Playwright
-- **Cross-platform support:** Windows and Linux
-- **Cross-browser testing:** Chrome, Firefox, and Edge
-- **Dockerized Environment:** Tests can be run in Docker containers with all dependencies preinstalled, enabling consistent and OS-independent execution
-- **Page Object Model:** Organizes page elements and interactions for better maintainability.
-- **Pytest Framework:** Uses pytest for writing and running tests.
-- **HTML Reports:** Generates HTML test reports using `pytest-html`.
-- **Centralized Configuration:** Manages configuration through `utils/config.py`.
-- **Virtual environment:** Uses Python `venv` for isolated dependency management based on `requirements.txt`.
-- **Logging:**  Uses Python’s built-in `logging` module for configurable and structured test logs
+## 2. Get and start the application
 
-## Prerequisites
+The tests need the [Automation Playground](https://github.com/alexduta-tech/automation-lab) app. Clone it into the same folder as this repository:
 
-- [Docker](https://www.docker.com/get-started)
-- [Python](https://www.python.org/downloads/) (for local development)
+```
+workspace/
+├── automation-lab/
+└── playwright-python-framework/
+```
 
-## Getting Started
+```powershell
+git clone https://github.com/alexduta-tech/automation-lab.git
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/alexduta-tech/playwright-python-framework.git
-    cd playwright-python-framework
-    ```
+`--reset-app-data` and the Docker setup look for the app's data there. If you cloned it somewhere else, set `AUT_USERS_FILE` (local runs) or `AUT_STORAGE_DIR` (Docker) to its location.
 
-2.  **Build and start the container:**
-- Docker setup is automated using a batch script.
-    1. Ensure Docker Desktop is installed and running
-    2. Run the setup script:
-    ```bash
-    run_playwright_docker.bat
-    ```
+Start the app before running the tests (see its README):
 
-- This will build the Docker image and start the container in the background.
-    
-- Note: Initial Docker execution may take additional time to build the image and download dependencies. This is a one-time cost; later runs benefit from Docker’s caching mechanism.
+- for **local** test runs, use its **local** installation;
+- for test runs **in Docker**, use its **Docker** installation.
 
-## Running the Tests
+## 3. Run the tests
 
-### Prerequisites
-Start Automation Playground application (locally or in Docker container) 
-Please see the instructions here: https://github.com/alexduta-tech/automation-lab
+```powershell
+pytest -m smoke --browser-channel chrome                   # all tests, once, in Chrome
+pytest tests/test_list_users.py --browser-channel chrome   # one test file
+```
 
-### Docker execution
-- You can run the tests by executing commands inside the running container.
-- From playwright-python-framework folder execute the following commands:
+Choose the browser on the command line:
 
--   **Run all tests:**
-    ```bash
-    docker compose exec playwright_tests pytest tests/
-    ```
+| Browser | Option |
+|---|---|
+| Chrome | `--browser-channel chrome` |
+| Edge | `--browser-channel msedge` |
+| Firefox (Playwright's own build) | `--browser firefox` |
 
--   **Run specific tests using markers(specify browser at command line):**
-    ```bash
-    docker compose exec playwright_tests pytest -m smoke --browser chromium -v 
-    ```
+Always choose a browser: without an option, Playwright uses its own Chromium instead of Chrome. Add `--headed` to see the browser window.
 
--   **Run tests a given number of times (e.g. 2 times):**    
-    ```bash
-    docker compose exec playwright_tests pytest -m smoke --browser chromium -v --count=2
-    ```        
+## 4. Repeated runs
 
-Notes:
-- In Docker the `headless` mode option is the strongly recommended to be used to run the automated tests (this is the default option set in the config file).
+- `--count=N` runs the whole test suite N times.
+- `--reset-app-data` empties the app's user list before each repetition, so every repetition starts with the same data. Use it for repeated runs; without it, the app gets slower as users pile up.
+- `MONITOR_RESOURCES` turns CPU and memory recording on or off. It is on by default; turn it off when you measure execution time, because recording uses CPU itself.
 
-### Local execution
--   **Create virtual environment (if not already created):**
-    ```bash
-    python -m venv .venv
-    ```
--   **Activate virtual environment (if not already activated):**
-    ```bash
-    .\.venv\Scripts\activate
-    ```
--   **Select interpreter from Visual Studio Code (if not already selected):**
-    Open the Command Palette (Ctrl+Shift+P), search for the Python: Select Interpreter command, and select it (e.g. .venv\Scripts\python.exe)
--   **Install dependencies (if not already installed):**
-    ```bash
-    pip install -r requirements.txt
-    ```
--   **Install browsers(if not already installed):**
-    ```
-    playwright install or playwright install chromium chrome firefox msedge
-    ```
--   **Run all tests:**
-    ```bash
-    pytest tests/
-    ```
--   **Run specific tests using markers (specify browser and headed at command line):**
-    ```bash
-    pytest -m smoke --browser chromium --headed -v
-    ```
--   **Run tests a given number of times (e.g. 2 times):**    
-    ```bash
-    pytest -m smoke --count=2 --browser chromium --headed -v
-    ```
+**Chrome, Edge and Firefox, 10 repetitions each**
 
-### Browser's
--   To run tests on different browsers, update the above running commands to use any of  the following:
-    ```bash
-    --browser chromium
-    --browser firefox
-    --browser webkit    
-    --browser-channel chrome
-    --browser-channel msedge
-    ```
-    - e.g. pytest -m smoke --browser chromium, pytest -m smoke --browser-channel chrome
--   To run tests in headed mode (only locall runs/not on Docker) please use the following param:
-    ```
-    --headed
-    ```
+```powershell
+$env:MONITOR_RESOURCES = "false"
+pytest -m smoke --browser-channel chrome --count=10 --reset-app-data
+pytest -m smoke --browser-channel msedge --count=10 --reset-app-data
+pytest -m smoke --browser firefox --count=10 --reset-app-data
+```
 
-### Reports and logs
-- The generated reports (html, screenshots) will be available in the `reports` directory on the execution machine.
-- Also a `.json report file` will be generated in the `reports` directory, this file contains all the execution details like overall and individual test status, execution time etc.
-- The generated logs will be available in the `logs` directory on the execution machine.
+Each run overwrites `reports/`, so copy the results somewhere else before starting the next browser.
 
-## Project Structure
+**Chrome, 50 repetitions**
+
+```powershell
+$env:MONITOR_RESOURCES = "false"
+pytest -m smoke --browser-channel chrome --count=50 --reset-app-data
+```
+
+**Chrome, 50 repetitions, with CPU and memory recording**
+
+```powershell
+$env:MONITOR_RESOURCES = "true"
+pytest -m smoke --browser-channel chrome --count=50 --reset-app-data
+```
+
+`--reset-app-data` needs the app's `users.json`: set `AUT_USERS_FILE` to its path if it is not at the default location (see `utils/config.py`). If the file is not found, the run stops before any test starts.
+
+> PowerShell keeps `$env:` values until you close the terminal. Remove one with `Remove-Item Env:MONITOR_RESOURCES`.
+
+## 5. Results
+
+| File | Contents |
+|---|---|
+| `reports/report.html` | Test results, to open in a browser |
+| `reports/report.json` | All results with the duration of each test step |
+| `reports/resource_samples.csv` | CPU and memory samples (when recording is on) |
+| `reports/resource_summary.csv` | CPU and memory summary per run (when recording is on) |
+| `reports/*.png` | Screenshot at the end of each test |
+| `logs/` | One log file per test |
+
+CPU values are summed over all processes and cores, so they can exceed 100%.
+
+## 6. Settings
+
+The browser is chosen on the command line (section 3); everything else is set with environment variables, whose defaults are in `utils/config.py`.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `MONITOR_RESOURCES` | `true` | Record CPU and memory |
+| `MONITOR_INTERVAL` | `0.5` | Seconds between CPU and memory samples |
+| `BASE_URL` | `http://localhost:3000/` | Address of the app |
+| `AUT_USERS_FILE` | see `utils/config.py` | Path to the app's `users.json`, used by `--reset-app-data` |
+| `VIEWPORT_WIDTH`, `VIEWPORT_HEIGHT` | `1920`, `1080` | Browser window size |
+
+## 7. Docker
+
+Build the image and start the container:
+
+```powershell
+.\run_playwright_docker.bat
+```
+
+Run commands inside the container with `docker compose exec`, and pass settings with `-e`. The three runs from section 4 become:
+
+```powershell
+# Chrome, Edge and Firefox, 10 repetitions each (one command per browser)
+docker compose exec -e MONITOR_RESOURCES=false playwright_tests pytest -m smoke --browser-channel chrome --count=10 --reset-app-data
+
+# Chrome, 50 repetitions
+docker compose exec -e MONITOR_RESOURCES=false playwright_tests pytest -m smoke --browser-channel chrome --count=50 --reset-app-data
+
+# Chrome, 50 repetitions, with CPU and memory recording
+docker compose exec -e MONITOR_RESOURCES=true playwright_tests pytest -m smoke --browser-channel chrome --count=50 --reset-app-data
+```
+
+For Edge and Firefox, replace `--browser-channel chrome` with `--browser-channel msedge` or `--browser firefox`.
+
+Good to know:
+- Results appear in this folder's `reports/` and `logs/`.
+- Changes to `tests/`, `pages/`, `utils/`, `monitoring/` and `data/` apply immediately. After changing `conftest.py`, `pyproject.toml`, `Dockerfile` or `requirements.txt`, rebuild: `docker compose build`, then `docker compose up -d --force-recreate`.
+- The app's data folder is mounted into the container for `--reset-app-data`. Set `AUT_STORAGE_DIR` to the app's `backend/app/storage` folder before starting the container if it is not at the default location (see `docker-compose.yml`).
+- The image contains Chrome and Edge (versions in `/opt/browser-versions.txt`) and Playwright's Chromium and Firefox. To install specific Chrome and Edge versions, set `CHROME_VERSION` and `EDGE_VERSION` before `docker compose build` (only the current Chrome release can be installed).
+- Tests always run headless in Docker.
+
+## Project structure
 
 ```
 .
-├── conftest.py             # Pytest configuration
-├── docker-compose.yml      # Docker Compose configuration
-├── Dockerfile              # Dockerfile for the test environment
-├── pages                   # Page Object Model classes
-├── reports                 # Test reports
-├── logs                    # Test logs
-├── requirements.txt        # Python dependencies
-├── pyproject.toml          # Python project metadata (define markers, html report generation etc.)
-├── run_playwright_docker.bat # Batch script to build and run the container
-├── data                    # Test data
-├── tests                   # Test suites
-└── utils                   # Utility modules
-    ├── config.py
-    ├── constants.py
-    ├── data_generator.py    
-    ├── docker.py
-    ├── logger.py
-    └── playwright_utils.py
+├── conftest.py      # test setup: browser per test, window size, timeouts, screenshots, data reset, CPU and memory recording
+├── pages/           # page objects
+├── tests/           # tests
+├── utils/           # settings, waits, test data, logging
+├── monitoring/      # CPU and memory recording
+├── data/            # test files
+├── Dockerfile, docker-compose.yml, run_playwright_docker.bat
+├── pyproject.toml   # pytest settings
+└── requirements.txt
 ```
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+Apache License 2.0. See [LICENSE](LICENSE).

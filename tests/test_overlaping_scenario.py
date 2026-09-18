@@ -10,7 +10,7 @@ from utils.config import BASE_URL
     "Random user:"
 ],ids=["Overlapping elements completed successfully"])
 @pytest.mark.smoke
-def test_overlaping_elements(page, logger, expected_message):
+def test_overlaping_elements(page, logger, screenshot, expected_message):
     """
     Test Overlapping Scenario
     """

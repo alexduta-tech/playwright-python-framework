@@ -1,4 +1,5 @@
 from playwright.sync_api import Page
+from utils.config import PAGE_LOAD_TIMEOUT_S
 from utils.playwright_utils import PlaywrightUtils
 
 class UserSearchOverlapPage:
@@ -21,7 +22,7 @@ class UserSearchOverlapPage:
     LOADING_SPINNER = ".spinner"
     
     # Page Object Methods
-    def wait_for_page_load(self, timeout=5) -> None:
+    def wait_for_page_load(self, timeout=PAGE_LOAD_TIMEOUT_S) -> None:
         """
         Wait for the User Search Overlap page to load by checking the presence of the uri.
         
@@ -29,7 +30,7 @@ class UserSearchOverlapPage:
             timeout: Maximum time to wait in seconds
         """
         self.logger.info("Waiting for User Search Overlap page to load")
-        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout)     
+        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout * 1000)     
         
     def go_back_to_dashboard(self) -> None:
         """
@@ -54,7 +55,7 @@ class UserSearchOverlapPage:
         self.logger.info("Clicking get random user button")
         # The button is overlapped by another element, with Playwright we do not need o scroll as this is automatically done
         self.page.click(self.BUTTON_GET_RANDOM_USER)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self
 
@@ -69,7 +70,7 @@ class UserSearchOverlapPage:
         # error message is present but was not expected
         if self.playwright_utils.is_element_present(self.MESSAGE_ERROR):
             self.logger.error("Error message present on the page, no success message available")
-            return self.page.text_content(self.MESSAGE_ERROR)
+            return self.page.inner_text(self.MESSAGE_ERROR)
 
         # success message is not present but it was expected
         if not self.playwright_utils.is_element_present(self.MESSAGE_SUCCESS):
@@ -77,7 +78,7 @@ class UserSearchOverlapPage:
             return "Success message not present on the page"
         
         # success message is present
-        success_message = self.page.text_content(self.MESSAGE_SUCCESS)
+        success_message = self.page.inner_text(self.MESSAGE_SUCCESS)
         self.logger.info(f"Success message is present on the page, text: {success_message}")
         
         return success_message               

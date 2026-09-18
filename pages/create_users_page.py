@@ -1,6 +1,6 @@
 import os
 from playwright.sync_api import Page
-from utils.config import IMPLICIT_WAIT
+from utils.config import IMPLICIT_WAIT, SETTLE_TIMEOUT_S, PAGE_LOAD_TIMEOUT_S
 from utils.playwright_utils import PlaywrightUtils
 from utils.constants import MESSAGE_CREATE_10_USERS_SUCCESS_TEXT, MESSAGE_CREATE_USER_ERROR_REQUIRED_FIELDS_TEXT, MESSAGE_CREATE_USER_SUCCESS_TEXT
 
@@ -29,14 +29,14 @@ class CreateUsersPage():
     LOADING_SPINNER = ".spinner"  
         
     # Page Object Methods
-    def wait_for_page_load(self, timeout=IMPLICIT_WAIT):
+    def wait_for_page_load(self, timeout=PAGE_LOAD_TIMEOUT_S):
         """
         Wait for the Create Users page to load by checking for the presence of the URI.
         Args:
-            timeout (int): Maximum time to wait for the page to load in milliseconds.
+            timeout: Maximum time to wait in seconds
         """
         self.logger.info("Waiting for Create Users page to load")
-        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout)
+        self.page.wait_for_url(f"**{self.page_path}", timeout=timeout * 1000)
         
     def go_back_to_dashboard(self) -> None:
         """
@@ -51,7 +51,7 @@ class CreateUsersPage():
         Returns:
             bool: True if on the Create Users page, False otherwise.
         """
-        return self.playwright_utils.is_element_present(self.CREATE_10_USERS_BUTTON)
+        return self.playwright_utils.is_element_present(self.BUTTON_CREATE_10_USERS)
     
     def click_create_user_button(self) -> 'CreateUsersPage':
         """
@@ -59,8 +59,18 @@ class CreateUsersPage():
         """
         self.logger.info("Clicking Create User button")
         self.page.click(self.BUTTON_CREATE_USER)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
-        
+        # Submitting either fails validation immediately, without any request, or
+        # ends with a success message. Both are visible outcomes, whereas the spinner
+        # of a quick request is often gone before it can be observed.
+        self.playwright_utils.wait_until(
+            lambda: any(
+                self.playwright_utils.is_element_present_now(self.MESSAGE_GENERIC_LOCATOR(message))
+                for message in (MESSAGE_CREATE_USER_SUCCESS_TEXT, MESSAGE_CREATE_USER_ERROR_REQUIRED_FIELDS_TEXT)
+            ),
+            SETTLE_TIMEOUT_S,
+            "the user creation outcome",
+        )
+
         return self
     
     def create_10_users(self) -> 'CreateUsersPage':
@@ -69,7 +79,7 @@ class CreateUsersPage():
         """
         self.logger.info("Clicking Create 10 Users button")
         self.page.click(self.BUTTON_CREATE_10_USERS)
-        self.playwright_utils.wait_for_element_to_disappear(self.LOADING_SPINNER)
+        self.playwright_utils.wait_for_loading_cycle(self.LOADING_SPINNER)
         
         return self    
     
@@ -95,15 +105,17 @@ class CreateUsersPage():
         """
         self.logger.info("Filling user creation form")
         self.logger.info(f"Name: {name}")
-        self.page.fill(self.INPUT_NAME, name)
+        # Typed key by key, like Selenium's send_keys, so that both frameworks fire
+        # the same input events and the application does the same work in response.
+        self.page.locator(self.INPUT_NAME).press_sequentially(name)
         self.logger.info(f"Email: {email}")
-        self.page.fill(self.INPUT_EMAIL, email)
+        self.page.locator(self.INPUT_EMAIL).press_sequentially(email)
         
         # Select role and status
         self.logger.info(f"Role: {role}")
-        self.page.select_option(self.SELECT_ROLE, role)
+        self.page.select_option(self.SELECT_ROLE, label=role)
         self.logger.info(f"Status: {status}")
-        self.page.select_option(self.SELECT_STATUS, status)
+        self.page.select_option(self.SELECT_STATUS, label=status)
         
         if profile_photo_path:
             self.logger.info(f"Uploading profile photo from: {profile_photo_path}")
