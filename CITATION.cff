@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Playwright Python Framework: UI Test Suite for Automation Playground"
+authors:
+  - family-names: "Duță"
+    given-names: "Alexandru"
+    affiliation: "Technical University of Cluj-Napoca"
+repository-code: "https://github.com/alexduta-tech/playwright-python-framework"
+license: Apache-2.0

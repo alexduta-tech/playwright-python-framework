@@ -141,6 +141,10 @@ Good to know:
 - The image contains Chrome and Edge (versions in `/opt/browser-versions.txt`) and Playwright's Chromium and Firefox. To install specific Chrome and Edge versions, set `CHROME_VERSION` and `EDGE_VERSION` before `docker compose build` (only the current Chrome release can be installed).
 - Tests always run headless in Docker.
 
+## 8. Measurement series with both frameworks
+
+To run this suite and the [Selenium version](https://github.com/alexduta-tech/selenium-python-framework) many times in a row, alternating the two frameworks and keeping every report, use `run_measurements.sh` from [test-metrics-analyzer](https://github.com/alexduta-tech/test-metrics-analyzer). Its README explains how to run it. The test cases are described in the app's [TEST_CASES.md](https://github.com/alexduta-tech/automation-lab/blob/main/TEST_CASES.md).
+
 ## Project structure
 
 ```
@@ -156,6 +160,10 @@ Good to know:
 └── requirements.txt
 ```
 
+## How to cite
+
+If you use this repository in your work, please cite it as described in [CITATION.cff](CITATION.cff) (on GitHub: "Cite this repository").
+
 ## License
 
-Apache License 2.0. See [LICENSE](LICENSE).
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
